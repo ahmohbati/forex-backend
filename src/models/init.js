@@ -96,7 +96,9 @@ const insertSampleData = async () => {
 };
 
 // Run initialization if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
+import path from 'path';
+const isMainInit = process.argv[1] && path.basename(process.argv[1]) === 'init.js' && process.argv[1].includes(`${path.sep}models${path.sep}`);
+if (isMainInit) {
   initDatabase();
 }
 

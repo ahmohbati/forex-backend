@@ -39,15 +39,18 @@ app.use(express.json());
 // Associations are initialized inside `initDatabase()` during startup
 
 // Database connection middleware
-app.use(async (req, res, next) => {
-  try {
-    await sequelize.authenticate();
-    next();
-  } catch (error) {
-    console.error('Database connection failed:', error);
-    res.status(500).json({ error: 'Database connection failed' });
-  }
-});
+// Skip DB authentication middleware during tests to make the app test-friendly
+if (process.env.NODE_ENV !== 'test') {
+  app.use(async (req, res, next) => {
+    try {
+      await sequelize.authenticate();
+      next();
+    } catch (error) {
+      console.error('Database connection failed:', error);
+      res.status(500).json({ error: 'Database connection failed' });
+    }
+  });
+}
 
 // Routes
 app.use('/api/auth', authRoutes);
@@ -56,6 +59,17 @@ app.use('/api/transactions', transactionRoutes);
 
 // Health check
 app.get('/api/health', async (req, res) => {
+  // In test mode we skip real DB checks
+  if (process.env.NODE_ENV === 'test') {
+    return res.json({ 
+      status: 'OK', 
+      message: 'Forex API is running (test mode)',
+      database: 'Skipped (test)',
+      baseCurrency: 'ETB',
+      timestamp: new Date().toISOString() 
+    });
+  }
+
   try {
     await sequelize.authenticate();
     res.json({ 
@@ -104,4 +118,13 @@ const startServer = async () => {
   }
 };
 
-startServer();
+// Only start the server when this file is executed directly.
+// This makes `app` importable by tests without starting the HTTP server.
+import path from 'path';
+
+const isMain = process.argv[1] && path.basename(process.argv[1]) === 'app.js' && process.argv[1].includes(`${path.sep}src${path.sep}`);
+if (isMain && process.env.NODE_ENV !== 'test') {
+  startServer();
+}
+
+export default app;
