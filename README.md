@@ -124,9 +124,4 @@ If you need to change synchronization behavior, open `src/models/init.js` and ad
 - The server entry point is `src/app.js`.
 - Models live in `src/models/` and routes in `src/routes/`.
 - Error handling and security middleware (Helmet, rate limiter) are applied globally.
-
-## License
-
-MIT — see `package.json` for details.
-
 ---
