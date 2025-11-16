@@ -1,5 +1,7 @@
 # Forex Exchange System — Backend
 
+[![Node.js CI - Tests](https://github.com/ahmohbati/forex-backend/actions/workflows/nodejs-tests.yml/badge.svg?branch=main)](https://github.com/ahmohbati/forex-backend/actions/workflows/nodejs-tests.yml)
+
 Lightweight backend for a Forex Exchange Management System built with Node.js, Express and Sequelize (Postgres).
 
 **Features**
