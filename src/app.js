@@ -104,9 +104,11 @@ const PORT = process.env.PORT || 3000;
 // Start server
 const startServer = async () => {
   try {
-    // Initialize database (creates tables and sample data)
-    await initDatabase();
-    
+    // NOTE: database initialization is now a manual step (run `npm run db:init`).
+    // Initializing the DB at server startup caused the process to exit
+    // in some environments because `initDatabase()` calls `process.exit()`.
+    // Run `npm run db:init` when you want to create tables/seed data.
+
     app.listen(PORT, () => {
       console.log(`🚀 Forex Backend Server running on port ${PORT}`);
       console.log(`💰 Base Currency: ETB (Ethiopian Birr)`);
