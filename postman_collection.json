@@ -1,0 +1,134 @@
+{
+  "info": {
+    "name": "Forex Backend API",
+    "description": "Postman collection for the Forex Exchange System backend. Use the `baseUrl` environment variable (default: http://localhost:3000). The `jwt` environment variable will be populated by the Login request test script.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tester@example.com\",\n  \"password\": \"password123\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/register", "host": ["{{baseUrl}}"], "path": ["api","auth","register"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Login (capture token)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tester@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/auth/login", "host": ["{{baseUrl}}"], "path": ["api","auth","login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Save token to environment variable 'jwt' for use in subsequent requests",
+                  "if (pm.response.code === 200 || pm.response.code === 201) {",
+                  "  const json = pm.response.json();",
+                  "  if (json.token) {",
+                  "    pm.environment.set('jwt', json.token);",
+                  "    console.log('Saved JWT to environment variable `jwt`.');",
+                  "  } else if (json.token === undefined && json.token === null) {",
+                  "    // fallback checks if token is nested under data",
+                  "  }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/health", "host": ["{{baseUrl}}"], "path": ["api","health"] }
+          },
+          "response": []
+        },
+        {
+          "name": "List Currencies",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/currencies", "host": ["{{baseUrl}}"], "path": ["api","currencies"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Currency by Code",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/api/currencies/{{code}}", "host": ["{{baseUrl}}"], "path": ["api","currencies","{{code}}"] }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Transactions (protected)",
+      "item": [
+        {
+          "name": "List User Transactions",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "url": { "raw": "{{baseUrl}}/api/transactions", "host": ["{{baseUrl}}"], "path": ["api","transactions"] }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Transaction",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Content-Type", "value": "application/json" },
+              { "key": "Authorization", "value": "Bearer {{jwt}}" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"fromCurrency\": \"ETB\",\n  \"toCurrency\": \"USD\",\n  \"amount\": 100\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/api/transactions", "host": ["{{baseUrl}}"], "path": ["api","transactions"] }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "jwt", "value": "" },
+    { "key": "code", "value": "USD" }
+  ]
+}
