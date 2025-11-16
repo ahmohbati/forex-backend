@@ -15,6 +15,20 @@ jobs:
       matrix:
         node-version:
           - 18.x
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: forex_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres" 
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
 
     steps:
       - name: Checkout repository
@@ -29,8 +43,41 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run tests
+      - name: Wait for Postgres (node check)
+        run: |
+          echo "Waiting for Postgres to be ready using Node..."
+          node <<'NODE'
+          const { Client } = require('pg');
+          (async function(){
+            for (let i = 0; i < 30; i++) {
+              try {
+                const c = new Client({ host: 'localhost', port: 5432, user: 'postgres', password: 'postgres', database: 'forex_test' });
+                await c.connect();
+                await c.end();
+                console.log('Postgres is ready');
+                process.exit(0);
+              } catch (err) {
+                console.log('Postgres not ready, retry', i + 1);
+                await new Promise(r => setTimeout(r, 1000));
+              }
+            }
+            console.error('Postgres did not become ready');
+            process.exit(1);
+          })();
+          NODE
+
+      - name: Set DATABASE_URL and initialize DB
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/forex_test
+          NODE_ENV: test
+        run: |
+          echo "DATABASE_URL=$DATABASE_URL"
+          # Initialize database (creates tables + seed)
+          npm run db:init || true
+
+      - name: Run tests against Postgres
         env:
           NODE_ENV: test
           JWT_SECRET: test_jwt_secret
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/forex_test
         run: npm test --if-present
