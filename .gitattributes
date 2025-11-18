@@ -1,0 +1,33 @@
+# Normalize line endings and avoid CRLF/LF warnings on Windows
+# Use platform-native line endings for binary files; treat text files consistently.
+
+# Auto-detect text files and normalize to LF in the repository
+* text=auto
+
+# Force LF for common source files so the repo contains predictable line endings
+*.js     text eol=lf
+*.mjs    text eol=lf
+*.cjs    text eol=lf
+*.json   text eol=lf
+*.ts     text eol=lf
+*.jsx    text eol=lf
+*.css    text eol=lf
+*.scss   text eol=lf
+*.html   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+
+# Shell scripts should use LF
+*.sh     text eol=lf
+
+# PowerShell scripts on Windows commonly use CRLF; keep CRLF on checkout
+*.ps1    text eol=crlf
+
+# Treat binary files as binary
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.zip    binary
+*.gz     binary

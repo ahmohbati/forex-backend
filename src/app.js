@@ -36,7 +36,11 @@ app.use(limiter);
 // Body parsing middleware
 app.use(express.json());
 
-// Associations are initialized inside `initDatabase()` during startup
+// Ensure model associations are registered regardless of whether the
+// full DB initialization script is run. `initDatabase()` performs
+// synchronization and seeding; `setupAssociations()` only wires model
+// relationships which are required for queries that include associations.
+setupAssociations();
 
 // Database connection middleware
 // Skip DB authentication middleware during tests to make the app test-friendly
