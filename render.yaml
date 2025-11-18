@@ -1,0 +1,28 @@
+# Render service template for the Forex Backend
+# Replace placeholder values and remove comments before committing if you prefer.
+
+services:
+  - type: web
+    name: forex-backend
+    env: node
+    region: oregon # change as needed
+    plan: free
+    branch: main
+    buildCommand: "npm install"
+    startCommand: "npm start"
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000 # Render will set a port automatically; keep this placeholder
+      - key: JWT_SECRET
+        value: "__REPLACE_WITH_SECRET__"
+      - key: DATABASE_URL
+        value: "__REPLACE_WITH_DATABASE_URL__"
+
+# Optional: create a managed Postgres database via Render's dashboard and
+# then attach the `DATABASE_URL` to the web service via Environment -> Databases.
+
+# Note: You can also create a `databases:` section if you use Render's managed DB
+# and want the entire infra described in a single file. See Render docs for
+# current render.yaml schema and additional fields.

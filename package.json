@@ -41,5 +41,8 @@
     "etb"
   ],
   "author": "Ahmed Mohammed",
-  "license": "MIT"
+  "license": "MIT",
+  "engines": {
+    "node": ">=18 <23"
+  }
 }
