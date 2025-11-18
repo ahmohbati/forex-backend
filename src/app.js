@@ -92,6 +92,21 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// API root - helpful index for debugging deployments
+app.get('/api', (req, res) => {
+  res.json({
+    name: 'Forex Backend API',
+    version: '1.0.0',
+    routes: [
+      '/api/health',
+      '/api/auth/register',
+      '/api/auth/login',
+      '/api/currencies',
+      '/api/transactions'
+    ]
+  });
+});
+
 // 404 handler
 app.use('*', (req, res) => {
   res.status(404).json({ error: 'Route not found' });
