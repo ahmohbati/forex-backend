@@ -23,7 +23,8 @@ const app = express();
 app.use(helmet());
 // Support a comma-separated FRONTEND_URL env var so multiple origins
 // can be allowed (e.g. 'http://localhost:5173,https://myfrontend.onrender.com')
-const rawFrontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+// Include the deployed frontend by default so Render-deployed frontend is allowed
+const rawFrontend = process.env.FRONTEND_URL || 'http://localhost:5173,https://forex-frontend-wfik.onrender.com';
 const allowedOrigins = rawFrontend.split(',').map(s => s.trim()).filter(Boolean);
 console.log('Allowed CORS origins:', allowedOrigins);
 
