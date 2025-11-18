@@ -21,10 +21,24 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:5173',
+// Support a comma-separated FRONTEND_URL env var so multiple origins
+// can be allowed (e.g. 'http://localhost:5173,https://myfrontend.onrender.com')
+const rawFrontend = process.env.FRONTEND_URL || 'http://localhost:5173';
+const allowedOrigins = rawFrontend.split(',').map(s => s.trim()).filter(Boolean);
+console.log('Allowed CORS origins:', allowedOrigins);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // Allow non-browser requests (e.g. curl, server-to-server) with no origin
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.length === 0) return callback(null, true);
+    if (allowedOrigins.includes(origin)) return callback(null, true);
+    return callback(new Error('CORS policy: origin not allowed'), false);
+  },
   credentials: true
-}));
+};
+
+app.use(cors(corsOptions));
 
 // Rate limiting
 const limiter = rateLimit({
