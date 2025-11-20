@@ -21,9 +21,7 @@ const app = express();
 
 // Security middleware
 app.use(helmet());
-// Support a comma-separated FRONTEND_URL env var so multiple origins
-// can be allowed (e.g. 'http://localhost:5173,https://myfrontend.onrender.com')
-// Include the deployed frontend by default so Render-deployed frontend is allowed
+
 const rawFrontend = process.env.FRONTEND_URL || 'http://localhost:5173,https://forex-frontend-wfik.onrender.com';
 const allowedOrigins = rawFrontend.split(',').map(s => s.trim()).filter(Boolean);
 console.log('Allowed CORS origins:', allowedOrigins);
@@ -51,10 +49,6 @@ app.use(limiter);
 // Body parsing middleware
 app.use(express.json());
 
-// Ensure model associations are registered regardless of whether the
-// full DB initialization script is run. `initDatabase()` performs
-// synchronization and seeding; `setupAssociations()` only wires model
-// relationships which are required for queries that include associations.
 setupAssociations();
 
 // Database connection middleware
@@ -138,11 +132,7 @@ const PORT = process.env.PORT || 3000;
 // Start server
 const startServer = async () => {
   try {
-    // NOTE: database initialization is now a manual step (run `npm run db:init`).
-    // Initializing the DB at server startup caused the process to exit
-    // in some environments because `initDatabase()` calls `process.exit()`.
-    // Run `npm run db:init` when you want to create tables/seed data.
-
+  
     app.listen(PORT, () => {
       console.log(`🚀 Forex Backend Server running on port ${PORT}`);
       console.log(`💰 Base Currency: ETB (Ethiopian Birr)`);
@@ -153,9 +143,6 @@ const startServer = async () => {
     process.exit(1);
   }
 };
-
-// Only start the server when this file is executed directly.
-// This makes `app` importable by tests without starting the HTTP server.
 import path from 'path';
 
 const isMain = process.argv[1] && path.basename(process.argv[1]) === 'app.js' && process.argv[1].includes(`${path.sep}src${path.sep}`);
