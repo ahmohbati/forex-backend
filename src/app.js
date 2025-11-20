@@ -3,6 +3,8 @@ import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import dotenv from 'dotenv';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger.js';
 
 // Import database and models
 import sequelize from './models/index.js';
@@ -69,6 +71,10 @@ if (process.env.NODE_ENV !== 'test') {
 app.use('/api/auth', authRoutes);
 app.use('/api/currencies', currencyRoutes);
 app.use('/api/transactions', transactionRoutes);
+
+// Swagger UI and JSON
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.get('/docs.json', (req, res) => res.json(swaggerSpec));
 
 // Health check
 app.get('/api/health', async (req, res) => {
