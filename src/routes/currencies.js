@@ -4,6 +4,25 @@ import ExchangeRate from '../models/ExchangeRate.js';
 
 const router = express.Router();
 
+/**
+ * @openapi
+ * /api/currencies:
+ *   get:
+ *     tags:
+ *       - Currencies
+ *     summary: Get all active currencies (ETB prioritized)
+ *     responses:
+ *       200:
+ *         description: List of currencies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Currency'
+ *       500:
+ *         $ref: '#/components/schemas/ErrorResponse'
+ */
 // Get all currencies (ETB first)
 router.get('/', async (req, res) => {
   try {
@@ -27,6 +46,31 @@ router.get('/', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/currencies/rates:
+ *   get:
+ *     tags:
+ *       - Currencies
+ *     summary: Get exchange rates for a base currency
+ *     parameters:
+ *       - in: query
+ *         name: base
+ *         schema:
+ *           type: string
+ *         description: Base currency code (default ETB)
+ *     responses:
+ *       200:
+ *         description: List of exchange rates
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ExchangeRate'
+ *       500:
+ *         $ref: '#/components/schemas/ErrorResponse'
+ */
 // Get exchange rates (default base: ETB)
 router.get('/rates', async (req, res) => {
   try {
@@ -57,6 +101,31 @@ router.get('/rates', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/currencies/convert:
+ *   post:
+ *     tags:
+ *       - Currencies
+ *     summary: Convert an amount from one currency to another
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/ConvertRequest'
+ *     responses:
+ *       200:
+ *         description: Conversion result
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ConvertResponse'
+ *       400:
+ *         $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         $ref: '#/components/schemas/ErrorResponse'
+ */
 // Convert currency (default from: ETB)
 router.post('/convert', async (req, res) => {
   try {
@@ -100,6 +169,25 @@ router.post('/convert', async (req, res) => {
   }
 });
 
+/**
+ * @openapi
+ * /api/currencies/popular-rates:
+ *   get:
+ *     tags:
+ *       - Currencies
+ *     summary: Get popular ETB exchange rates for dashboard
+ *     responses:
+ *       200:
+ *         description: Latest rates for popular currencies
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ExchangeRate'
+ *       500:
+ *         $ref: '#/components/schemas/ErrorResponse'
+ */
 // Get popular ETB exchange rates (for dashboard)
 router.get('/popular-rates', async (req, res) => {
   try {
